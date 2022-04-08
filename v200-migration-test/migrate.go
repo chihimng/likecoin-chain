@@ -19,8 +19,6 @@ import (
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	slashingtypes "github.com/cosmos/cosmos-sdk/x/slashing/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
-	abci "github.com/tendermint/tendermint/abci/types"
-	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 )
 
 type MTAppOptions struct{}
@@ -81,13 +79,10 @@ func main() {
 
 	// Apply upgrade
 	fmt.Printf("> apply upgrade\n")
-	header := tmproto.Header{Height: app.LastBlockHeight() + 1}
-	app.BeginBlock(abci.RequestBeginBlock{Header: header})
 	ctx = ctx.WithBlockGasMeter(sdk.NewInfiniteGasMeter())
 	app.UpgradeKeeper.ApplyUpgrade(ctx, upgradetypes.Plan{
 		Name: "v2.0.0",
 	})
-	app.EndBlock(abci.RequestEndBlock{})
 	app.Commit()
 
 	// Assert
